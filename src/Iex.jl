@@ -4,10 +4,10 @@ module Iex
 
 export
     # connection/Connect.jl
-    Connection, status,
+    connection, status,
 
     # account/Account.jl
-    usage,
+    usage
 
 
 # Connections

@@ -18,7 +18,7 @@ end
 Populates IEX connection parameters used in constructing
 GET and POST requests for API.
 """
-function Connection(params::NamedTuple)
+function connection(params::NamedTuple)
     secret_token = params.secret_token
     public_token = params.public_token
     url = params.url
