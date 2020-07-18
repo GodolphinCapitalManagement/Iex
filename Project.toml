@@ -1,0 +1,13 @@
+name = "Iex"
+uuid = "b27bd851-a93f-42bd-80e1-9865c91f4e2d"
+authors = ["Gyan Sinha <gsinha@godolphincapital.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
