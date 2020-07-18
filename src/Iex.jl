@@ -7,7 +7,7 @@ export
     Connection, status,
 
     # account/Account.jl
-    usage
+    usage,
 
 
 # Connections
