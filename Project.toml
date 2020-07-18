@@ -3,6 +3,10 @@ uuid = "b27bd851-a93f-42bd-80e1-9865c91f4e2d"
 authors = ["Gyan Sinha <gsinha@godolphincapital.com> and contributors"]
 version = "0.1.0"
 
+[deps]
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+
 [compat]
 julia = "1"
 

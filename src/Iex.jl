@@ -1,5 +1,19 @@
+# Iex
+__precompile__()
 module Iex
 
-# Write your package code here.
+export
+    # connection/Connect.jl
+    Connection, status,
+
+    # account/Account.jl
+    usage
+
+
+# Connections
+include("connection/Connect.jl")
+
+# Accounts
+include("account/Account.jl")
 
 end
