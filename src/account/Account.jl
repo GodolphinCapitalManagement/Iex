@@ -3,26 +3,46 @@
 import HTTP: request
 import JSON: parse
 
+
+const valid_types = [
+    "messages", "rules", "rule-records", "alerts",
+    "alert-records"
+]
+
 struct UsageTypeException <: Exception
     msg::AbstractString
+
+    function UsageTypeException()
+        msg = "quota_type must be one of " * join(valid_types, ", ")
+        new(msg)
+    end
 end
 
 
-VALID_TYPES = ("messages", "rules", "rule-records", "alerts", "alert-records")
-
 """
-    usage(conn::Connection; quote_type="message)
+    usage(conn::Connection; quota_type="messages")
 
-Get usage for IEX connection conn
+Get usage for account associated with IEX connection conn
 """
-function usage(conn; quote_type::String="messages")
-    if !(quote_type in VALID_TYPES)
-        valid_types = join(VALID_TYPES, ", ")
-        err_msg = "quote_type '$quote_type' not one of [$valid_types]"
-        throw(UsageTypeException(err_msg))
+function usage(conn; quota_type::String="messages")
+    if !(quota_type in valid_types)
+        throw(UsageTypeException())
     end
 
-    url = conn.url * conn.version * "/account/usage/" * quote_type
-    r = request("GET", url;query = Dict("token" => conn.secret_token))
+    url = conn.url * conn.version * "/account/usage/" * quota_type
+    r = request("GET", url; query = Dict("token" => conn.secret_token))
     return parse(String(r.body))
 end
+
+
+"""
+    metadata(conn::Connection)
+
+Get metadata for account associated wth IEX connection conn
+"""
+function metadata(conn)
+    url = conn.url * conn.version * "/account/metadata"
+    r = request("GET", url; query = Dict("token" => conn.secret_token))
+    return parse(String(r.body))
+end
+
