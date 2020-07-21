@@ -2,15 +2,63 @@
 __precompile__()
 module Iex
 
-export
-    # connection/Connect.jl
-    connection, status,
+# Global Connection object
+mutable struct Connection
+    url::String
+    version::String
+    token::String
+end
 
-    # account/Account.jl
-    usage, metadata,
 
-    # stock/Stock.jl
-    chart
+"""
+    init_connection(;url::String = "",version::String="",token::String="")
+
+initializes IEX connection parameters
+"""
+function init_connection(;
+    url::String = "",
+    version::String = "",
+    token::String = "",
+)
+    Connection(url, version, token)
+end
+
+
+"""
+    set_connection_url!(conn::Connection, url::String)
+
+Modifies url for connection object conn
+"""
+function set_connection_url!(conn::Connection, url::String)
+    conn.url = url
+end
+
+
+"""
+    set_connection_version!(conn::Connection, version::String)
+
+Modifies version for connection object conn
+"""
+function set_connection_version!(conn::Connection, version::String)
+    conn.version = version
+end
+
+
+"""
+    set_connection_token!(conn::Connection, token::String)
+
+Modifies url for connection object conn
+"""
+function set_connection_token!(conn::Connection, token::String)
+    conn.token = token
+end
+
+
+export Connection,
+    init_connection,
+    set_connection_url!,
+    set_connection_version!,
+    set_connection_token!
 
 
 # Connections
@@ -20,6 +68,31 @@ include("connection/Connect.jl")
 include("account/Account.jl")
 
 # Stocks
-include("stock/Stock.jl")
+include("stock/Prices.jl")
+include("stock/Profiles.jl")
+
+export
+    # account/Account.jl
+    usage,
+    metadata,
+
+    # connection/Connect.jl
+    # get_iex, status,
+
+    # stock/Prices.jl
+    history,
+    batch,
+
+    # stock/Profiles.jl
+    company,
+    insider_roster,
+    insider_summary,
+    insider_transactions,
+    logo,
+    peers,
+    balance_sheet,
+    dividends,
+    earnings
+
 
 end

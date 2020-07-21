@@ -4,10 +4,8 @@ import HTTP: request
 import JSON: parse
 
 
-const valid_types = [
-    "messages", "rules", "rule-records", "alerts",
-    "alert-records"
-]
+const valid_types =
+    ["messages", "rules", "rule-records", "alerts", "alert-records"]
 
 struct UsageTypeException <: Exception
     msg::AbstractString
@@ -20,17 +18,17 @@ end
 
 
 """
-    usage(conn::Connection; quota_type="messages")
+    usage(get_iex; quota_type="messages")
 
 Get usage for account associated with IEX connection conn
 """
-function usage(conn; quota_type::String="messages")
+function usage(conn::Connection; quota_type::String = "messages")
     if !(quota_type in valid_types)
         throw(UsageTypeException())
     end
 
     url = conn.url * conn.version * "/account/usage/" * quota_type
-    r = request("GET", url; query = Dict("token" => conn.secret_token))
+    r = request("GET", url; query = Dict("token" => conn.token))
     return parse(String(r.body))
 end
 
@@ -40,9 +38,8 @@ end
 
 Get metadata for account associated wth IEX connection conn
 """
-function metadata(conn)
+function metadata(conn::Connection)
     url = conn.url * conn.version * "/account/metadata"
-    r = request("GET", url; query = Dict("token" => conn.secret_token))
+    r = request("GET", url; query = Dict("token" => conn.token))
     return parse(String(r.body))
 end
-
