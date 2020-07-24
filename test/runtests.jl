@@ -2,5 +2,6 @@ using Iex
 using Test
 
 @testset "Iex.jl" begin
-    # Write your tests here.
+    include("Profiles_test.jl")
+    include("Prices_test.jl")
 end
