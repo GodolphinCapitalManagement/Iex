@@ -14,13 +14,14 @@ available message quota for the month.
 The free tier level provides 50,000 core messages/month,
 unlimited Investors Exchange data, unlimited sandbox testing,
 and limited access to core data. A new account can be
-established [here](https://iexcloud.io/cloud-login#/register)/
+established [here](https://iexcloud.io/cloud-login#/register).
 
 ## Installation
 
 ```
 # Iex.jl is not currently registered as an official package
 # Please install the development version from GitHub:
+
 Pkg.clone("git://GitHub.com/GodolphinCapitalManagement/Iex.jl")
 ```
 
@@ -37,7 +38,7 @@ symbol_quote(iex, "AAPL")
 
 ## Usage
 
-```
+```@docs
 using DataFrames
 using Plots
 
@@ -49,16 +50,15 @@ params = (
     url="https://sandbox.iexapis.com",
     version="stable",
 )
-iex = init_connection(;url=params.url, version=params.version,
-    token=params.token);
+iex = init_connection(;url=params.url, version=params.version, token=params.token);
 
-gr(size=(800,470))
+gr(fmt=:png, size=(800,470))
 # Get daily S&P 500 data
 data = history(iex, "SPY");
 
 # Plot the timeseries
-@df data plot(:date, [:low :high :close], label=["Low" "High" "Close"], colour=[:red :green :blue], w=2)
+plot(data.date, data.close, label="Close", title="SPY")
+plot!(data.date, data.high, label="High")
+plot!(data.date, data.low, label="Low")
 savefig("spy.png")
 ```
-
-![](static/spy.png)
