@@ -31,14 +31,14 @@ If you encounter a clear bug, please file a minimal reproducible example on GitH
 
 ### Time Series for AAPL
 
-```
+```@docs
 history(iex, "AAPL")
 symbol_quote(iex, "AAPL")
 ```
 
 ## Usage
 
-```@docs
+```
 using DataFrames
 using Plots
 
