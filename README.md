@@ -11,5 +11,5 @@ available message quota for the month.
 
 The free tier level provides 50,000 core messages/month,
 unlimited Investors Exchange data, unlimited sandbox testing,
-and limited access to core data. A new account can be
-established [here](https://iexcloud.io/cloud-login#/register).
+and limited access to core data. You can register a new IEX
+Cloud account [at](https://iexcloud.io/cloud-login#/register).
