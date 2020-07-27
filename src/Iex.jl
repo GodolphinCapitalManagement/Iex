@@ -77,6 +77,12 @@ include("account/Account.jl")
 include("stock/Prices.jl")
 include("stock/Profiles.jl")
 
+# Fundamentals
+include("stock/Fundamentals.jl")
+
+# News
+include("stock/News.jl")
+
 # Reference
 include("reference/Reference.jl")
 
@@ -100,10 +106,15 @@ export
     insider_transactions,
     logo,
     peers,
+
+    # stock/Fundamentals.jl
     balance_sheet,
     dividends,
     earnings,
     income,
+    split,
+
+    # stock/News.jl
     news,
 
     # reference/Reference.jl
