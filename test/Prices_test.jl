@@ -8,7 +8,7 @@ TEST_SLEEP_TIME = 15.0
 price_functions_test = [:history,:price,:book,:symbol_quote]
 
 params = (
-    token=ENV["IEX_SANDBOX_API_KEY"],
+    token="Tsk_37cebd73a857428f9e27b4cd3aa1bc4a",
     url="https://sandbox.iexapis.com/",
     version="stable",
 )
