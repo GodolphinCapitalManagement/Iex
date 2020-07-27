@@ -7,12 +7,6 @@ import Dates: Date
 import DataFrames: DataFrame, Not
 
 
-const valid_range_values = [
-    "max", "5y", "2y", "1y", "ytd", "6m", "3m", "1m", "1mm", "5d", "5dm",
-    "date", "dynamic"
-]
-
-
 """
     history(conn::Connection, symbol::String; daterange="1m",
         chartcloseonly::Bool = false,
@@ -33,9 +27,6 @@ function history(
     chartcloseonly::Bool = false,
     columns = "date,open,high,low,close,volume,uOpen,uHigh,uLow,uClose,uVolume"
 )::DataFrame
-    if !(daterange in valid_range_values)
-        throw(ArgumentError("invalid range value"))
-    end
     path_params = Dict("symbol" => symbol, "range" => daterange)
     query_params = Dict("chartCloseOnly" => chartcloseonly,
         "filter" => columns
