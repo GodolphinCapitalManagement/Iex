@@ -1,7 +1,6 @@
 # Stocks/Profiles
 import Iex.Connect: status
 
-include("Utils.jl")
 
 """
     profile(conn::Connection, symbol::String)
