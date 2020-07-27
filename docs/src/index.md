@@ -18,6 +18,19 @@ established [here](https://iexcloud.io/cloud-login#/register).
 
 ## Installation
 
+
+```@meta
+CurrentModule = Iex
+DocTestSetup = quote
+    using Iex
+end
+```
+
+```@autodocs
+Modules = [Iex, Iex.Connect]
+```
+
+
 ```
 # Iex.jl is not currently registered as an official package
 # Please install the development version from GitHub:
@@ -31,9 +44,9 @@ If you encounter a clear bug, please file a minimal reproducible example on GitH
 
 ### Time Series for AAPL
 
-```@docs
-history(iex, "AAPL")
-symbol_quote(iex, "AAPL")
+```
+Iex.history(iex, "AAPL")
+Iex.symbol_quote(iex, "AAPL")
 ```
 
 ## Usage
