@@ -6,6 +6,12 @@ import JSON: parse
 import Iex.Connect: IEXException
 
 
+const valid_range_values = [
+    "max", "5y", "2y", "1y", "ytd", "6m", "3m", "1m", "1mm", "5d", "5dm",
+    "date", "dynamic", "next"
+]
+
+
 """
     get_stocks(conn::Connection, endpoint::String, path_params;
         query_params=Dict())
@@ -28,6 +34,9 @@ function get_stocks(
     end
 
     daterange = get(path_params, "range", "")
+    if !(daterange in valid_range_values)
+        throw(ArgumentError("invalid range value"))
+    end
     asofdate = get(path_params, "date", "")
     date = isempty(asofdate) ? "" : "date/" * asofdate
     http_string = "/stock/$symbol/$endpoint/$daterange/$date"
