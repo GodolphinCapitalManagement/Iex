@@ -24,7 +24,7 @@ iex = init_connection(;url=params.url, version=params.version,
                 data = $f(iex, "AAPL")
                 if testname == "history"
                     @test typeof(data) == DataFrame
-                    @test size(data) == (21, 12)
+                    @test size(data) == (21, 13)
                 elseif testname == "price"
                     @test typeof(data) == Float64
                     @test length(data) == 1
@@ -42,7 +42,8 @@ iex = init_connection(;url=params.url, version=params.version,
     end
 
     @testset "Testing get_stocks" begin
-        data = Iex.get_stocks(iex, "chart", Dict("symbol" => "AAPL"))
+        path_params = [:symbol]
+        data = Iex.get_stocks(iex, "chart", path_params; symbol = "AAPL")
         @test typeof(data) == Array{Any,1}
         @test length(data) == 21
     end

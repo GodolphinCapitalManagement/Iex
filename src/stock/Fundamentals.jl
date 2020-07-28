@@ -2,7 +2,6 @@
 # Stocks/Fundamentals
 import Iex.Connect: status
 
-include("Utils.jl")
 
 """
     balance_sheet(conn::Connection, symbol::String; period::String="quarter",
@@ -17,20 +16,22 @@ function balance_sheet(
     period::String = "quarter",
     last::Int = 1,
 )
-    path_params = Dict("symbol" => symbol)
-    query_params = Dict("period" => period, "last" => last)
+
+    path_params = [:symbol]
     return get_stocks(
         conn,
         "balance-sheet",
         path_params;
-        query_params = query_params,
+        symbol = symbol,
+        period = period,
+        last = last
     )
 end
 
 
 """
     cashflow(conn::Connection, symbol::String; period::String="quarter",
-        last::Int=get_iex1)
+        last::Int=1)
 
 Pulls cash flow data. Available quarterly
     or annually, with the default being the last available quarter.
@@ -41,13 +42,14 @@ function cashflow(
     period::String = "quarter",
     last::Int = 1,
 )
-    path_params = Dict("symbol" => symbol)
-    query_params = Dict("period" => period, "last" => last)
+    path_params = [:symbol]
     return get_stocks(
         conn,
         "cash-flow",
         path_params;
-        query_params = query_params,
+        symbol = symbol,
+        period = period,
+        last = last
     )
 end
 
@@ -62,9 +64,15 @@ of history and comprehensive data, use the
 [Advanced Dividends](https://iexcloud.io/docs/api/#dividends)
 endpoint.
 """
-function dividends(conn::Connection, symbol::String; daterange::String = "1m")
-    path_params = Dict("symbol" => symbol, "range" => daterange)
-    return get_stocks(conn, "dividends", path_params)
+function dividends(conn::Connection, symbol::String; range::String = "1m")
+    path_params = [:symbol, :range]
+    return get_stocks(
+        conn,
+        "dividends",
+        path_params;
+        symbol = symbol,
+        range=range
+    )
 end
 
 
@@ -81,15 +89,17 @@ function earnings(
     symbol::String;
     period::String = "quarter",
     field::String = "actualEPS",
-    last::Int = 1,
+    last::Int = 1
 )
-    path_params = Dict("symbol" => symbol, "last" => last, "field" => field)
-    query_params = Dict("last" => last, "period" => period)
+    path_params = [:symbol, :last, :field]
     return get_stocks(
         conn,
         "earnings",
         path_params;
-        query_params = query_params,
+        symbol = symbol,
+        last = last,
+        field = field,
+        period = period
     )
 end
 
@@ -108,13 +118,14 @@ function income(
     period::String = "quarter",
     last::Int = 1,
 )
-    path_params = Dict("symbol" => symbol)
-    query_params = Dict("period" => period, "last" => last)
+    path_params = [:symbol]
     return get_stocks(
         conn,
         "financials",
         path_params;
-        query_params = query_params,
+        symbol = symbol,
+        period = period,
+        last = last
     )
 end
 
@@ -128,19 +139,25 @@ Return split information about symbol. Response attributes are:
 |--------------|--------|--------------------------------------------------|
 | exDate       | string | refers to the split ex-date                                                                                                                                                                                                                               |
 | declaredDate | string | refers to the split declaration date                                                                                                                                                                                                                      |
-| ratio        | number | refers to the split ratio.  The split ratio is an 
-|              |        | inverse of the  number of shares that a holder of 
+| ratio        | number | refers to the split ratio.  The split ratio is an
+|              |        | inverse of the  number of shares that a holder of
 |              |        | the stock would have after the split  divided by the
-|              |        | number of shares that the holder had before.    
+|              |        | number of shares that the holder had before.
 |              |        | For example:  Split ratio of .5 = 2 for 1 split.
-| toFactor     | string | To factor of the split. Used to calculate the split 
+| toFactor     | string | To factor of the split. Used to calculate the split
 |              |        | ratio fromfactor/tofactor = ratio (eg ½ = 0.5)                                                                                                                                                        |
-| fromFactor   | string | From factor of the split. Used to calculate the split 
+| fromFactor   | string | From factor of the split. Used to calculate the split
 |              |        | ratio fromfactor/tofactor = ratio (eg ½ = 0.5)                                                                                                                                                      |
 | description  | string | Description of the split event.                                                                                                                                                                                                                           |
 
 """
-function splits(conn::Connection, symbol::String; daterange="next")
-    path_params = Dict("symbol" => symbol, "range" => daterange)
-    return get_stocks(conn, "splits", path_params)
+function splits(conn::Connection, symbol::String; range="next")
+    path_params = [:symbol, :range]
+    return get_stocks(
+        conn,
+        "splits",
+        path_params;
+        symbol = symbol,
+        range = range
+    )
 end

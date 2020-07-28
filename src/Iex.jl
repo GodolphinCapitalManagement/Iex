@@ -74,7 +74,6 @@ include("connection/Connect.jl")
 include("account/Account.jl")
 
 # Stocks
-include("stock/Utils.jl")
 include("stock/Prices.jl")
 include("stock/Profiles.jl")
 
@@ -99,9 +98,7 @@ export
     symbol_quote,
     price,
     ohlc,
-
-    # stock/Utils.jl
-    get_stock,
+    largest_trades,
 
     # stock/Profiles.jl
     company,

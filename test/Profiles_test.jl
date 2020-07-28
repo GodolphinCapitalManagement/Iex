@@ -55,10 +55,4 @@ iex = init_connection(;url=params.url, version=params.version,
         end
         sleep(TEST_SLEEP_TIME + 2*rand()) #as to not overload the API
     end
-
-    @testset "Testing get_stocks" begin
-        data = Iex.get_stocks(iex, "chart", Dict("symbol" => "AAPL"))
-        @test typeof(data) == Array{Any,1}
-        @test length(data) == 21
-    end
 end

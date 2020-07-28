@@ -7,10 +7,15 @@ import Dates: Date
 import DataFrames: DataFrame, Not
 
 
+std_cols = "date,label,open,high,low,close,volume,uOpen,uHigh,uLow,uClose,uVolume"
+
+
 """
-    history(conn::Connection, symbol::String; daterange="1m",
-        chartcloseonly::Bool = false,
-        columns = "date,open,high,low,close,volume,uOpen,uHigh,uLow,uClose,uVolume"
+    history(
+        conn::Connection, symbol::String;
+        range::String = "1m", date::String = "",
+        filter = std_cols;
+        chartCloseOnly::Bool = false
     )
 
 Gets adjusted and unadjusted historical data
@@ -23,16 +28,22 @@ working on new endpoints to simplify time series queries.
 function history(
     conn::Connection,
     symbol::String;
-    daterange = "1m",
-    chartcloseonly::Bool = false,
-    columns = "date,open,high,low,close,volume,uOpen,uHigh,uLow,uClose,uVolume"
+    range::String = "1m",
+    date::String = "",
+    filter = std_cols,
+    chartCloseOnly::Bool = false
 )::DataFrame
-    path_params = Dict("symbol" => symbol, "range" => daterange)
-    query_params = Dict("chartCloseOnly" => chartcloseonly,
-        "filter" => columns
+
+    path_params = [:symbol, :range, :date]
+    d = get_stocks(
+        conn, "chart", path_params;
+        symbol = symbol,
+        range = range,
+        date = date,
+        filter = filter,
+        chartCloseOnly = chartCloseOnly
     )
-    d = get_stocks(conn, "chart", path_params; query_params = query_params)
-    colnames = split("symbol," * columns, ",")
+    colnames = split("symbol," * std_cols, ",")
     if length(d) > 0
         df = vcat(map(x -> DataFrame(x), d)...)
         df[!, :date] = Date.(df[!, :date])
@@ -60,9 +71,8 @@ end
 
 """
     batch(conn::Connection, symbol::String, types::String; symbols="",
-        daterange="1m",
-        columns = "date,open,high,low,close,volume,uOpen,uHigh,uLow,uClose,uVolume"
-)
+        range="1m"
+    )
 
 Batch various API endpoints for a symbol or list of symbols
 
@@ -99,28 +109,25 @@ function batch(
     symbol::String,
     types::String;
     symbols::String = "",
-    daterange = "1m",
-    columns = "date,open,high,low,close,volume,uOpen,uHigh,uLow,uClose,uVolume"
+    range = "1m",
+    filter = std_cols
 )
-
-    path_params = Dict("symbol" => symbol)
-
-    if !(daterange in valid_range_values)
-        throw(ArgumentError("invalid range value"))
-    end
-    query_params = Dict("range" => daterange, "types" => types,
-        "filter" => columns
-    )
+    path_params = [:symbol, :range, :date]
 
     if symbol == "market"
         if isempty(symbols)
             throw(ArgumentError("batch requires at least 1 symbol"))
-        else
-            query_params = merge(Dict("symbols" => symbols), query_params)
         end
     end
 
-    return get_stocks(conn, "batch", path_params; query_params = query_params)
+    return get_stocks(
+        conn, "batch", path_params;
+        symbol = symbol,
+        symbols = symbols,
+        types = types,
+        range = range,
+        filter = filter
+    )
 end
 
 
@@ -130,8 +137,8 @@ end
 Response includes data from deep and quote. Refer to each endpoint for details.
 """
 function book(conn::Connection, symbol::String)
-    path_params = Dict("symbol" => symbol)
-    return get_stocks(conn, "book", path_params)
+    path_params = [:symbol]
+    return get_stocks(conn, "book", path_params; symbol = symbol)
 end
 
 
@@ -139,8 +146,8 @@ end
     symbol_quote(conn::Connection, symbol::String; field::String="latestPrice")
 """
 function symbol_quote(conn::Connection, symbol::String; field::String="latestPrice")
-    path_params = Dict("symbol" => symbol, "field" => field)
-    return get_stocks(conn, "quote", path_params)
+    path_params = [:symbol, :field]
+    return get_stocks(conn, "quote", path_params; symbol = symbol, field = field)
 end
 
 
@@ -150,8 +157,8 @@ end
 Response includes data from deep and quote. Refer to each endpoint for details.
 """
 function price(conn::Connection, symbol::String)
-    path_params = Dict("symbol" => symbol)
-    return get_stocks(conn, "price", path_params)
+    path_params = [:symbol]
+    return get_stocks(conn, "price", path_params; symbol = symbol)
 end
 
 
@@ -161,6 +168,17 @@ end
 Response includes data from deep and quote. Refer to each endpoint for details.
 """
 function ohlc(conn::Connection, symbol::String)
-    path_params = Dict("symbol" => symbol)
-    return get_stocks(conn, "ohlc", path_params)
+    path_params = [:symbol]
+    return get_stocks(conn, "ohlc", path_params; symbol = symbol)
+end
+
+
+"""
+    largest_trades(conn::Connection, symbol::String)
+
+Returns 15 minute delayed, last sale eligible trades.
+"""
+function largest_trades(conn::Connection, symbol::String)
+    path_params = [:symbol]
+    return get_stocks(conn, "largest-trades"; symbol = symbol)
 end
