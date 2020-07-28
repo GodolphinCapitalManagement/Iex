@@ -1,6 +1,8 @@
 using Iex
 using Test
 
+#  using tokens in API examples on iexcloud.io
 @testset "Iex.jl" begin
-    # Write your tests here.
+    include("Profiles_test.jl")
+    include("Prices_test.jl")
 end
