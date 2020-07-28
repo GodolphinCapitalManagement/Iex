@@ -2,6 +2,12 @@
 __precompile__()
 module Iex
 
+function __init__()
+    if !haskey(ENV, "IEX_SANDBOX_API_KEY")
+        @warn "No IEX SANDBOX API key found"
+    end
+end
+
 # Global Connection object
 mutable struct Connection
     url::String
@@ -71,17 +77,28 @@ include("account/Account.jl")
 include("stock/Prices.jl")
 include("stock/Profiles.jl")
 
+# Fundamentals
+include("stock/Fundamentals.jl")
+
+# News
+include("stock/News.jl")
+
+# Reference
+include("reference/Reference.jl")
+
 export
     # account/Account.jl
     usage,
     metadata,
 
-    # connection/Connect.jl
-    # get_iex, status,
-
     # stock/Prices.jl
     history,
     batch,
+    book,
+    symbol_quote,
+    price,
+    ohlc,
+    largest_trades,
 
     # stock/Profiles.jl
     company,
@@ -90,9 +107,19 @@ export
     insider_transactions,
     logo,
     peers,
+
+    # stock/Fundamentals.jl
     balance_sheet,
     dividends,
-    earnings
+    earnings,
+    income,
+    split,
+
+    # stock/News.jl
+    news,
+
+    # reference/Reference.jl
+    symbols
 
 
 end
