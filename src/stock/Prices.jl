@@ -43,7 +43,7 @@ function history(
         filter = filter,
         chartCloseOnly = chartCloseOnly
     )
-    colnames = split("symbol," * std_cols, ",")
+    colnames = split("symbol," * filter, ",")
     if length(d) > 0
         df = vcat(map(x -> DataFrame(x), d)...)
         df[!, :date] = Date.(df[!, :date])
@@ -53,6 +53,7 @@ function history(
         coltypes = [
             String,
             Date,
+            String,
             Float64,
             Float64,
             Float64,
@@ -180,5 +181,5 @@ Returns 15 minute delayed, last sale eligible trades.
 """
 function largest_trades(conn::Connection, symbol::String)
     path_params = [:symbol]
-    return get_stocks(conn, "largest-trades"; symbol = symbol)
+    return get_stocks(conn, "largest-trades", path_params; symbol = symbol)
 end

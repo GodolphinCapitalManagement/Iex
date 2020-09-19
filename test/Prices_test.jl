@@ -1,5 +1,4 @@
 
-using DataFrames: DataFrame
 using Iex
 using Iex.Connect
 

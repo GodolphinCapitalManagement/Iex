@@ -80,6 +80,9 @@ include("stock/Profiles.jl")
 # Fundamentals
 include("stock/Fundamentals.jl")
 
+# Research
+include("stock/Research.jl")
+
 # News
 include("stock/News.jl")
 
@@ -114,6 +117,9 @@ export
     earnings,
     income,
     split,
+
+    # stock/Research.jl
+    stats,
 
     # stock/News.jl
     news,
