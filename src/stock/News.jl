@@ -1,9 +1,6 @@
 # Stocks/News
 import Iex.Connect: status
 
-include("Utils.jl")
-
-
 """
     news(conn::Connection, symbol::String; last::Int=10
 

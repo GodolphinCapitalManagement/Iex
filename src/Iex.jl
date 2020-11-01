@@ -70,6 +70,9 @@ export Connection,
 # Connections
 include("connection/Connect.jl")
 
+# Utils
+include("stock/Utils.jl")
+
 # Accounts
 include("account/Account.jl")
 
@@ -89,6 +92,7 @@ include("stock/News.jl")
 # Reference
 include("reference/Reference.jl")
 
+
 export
     # account/Account.jl
     usage,
@@ -102,6 +106,7 @@ export
     price,
     ohlc,
     largest_trades,
+    batched_closes,
 
     # stock/Profiles.jl
     company,
@@ -125,7 +130,10 @@ export
     news,
 
     # reference/Reference.jl
-    symbols
+    symbols,
+
+    # stock/Utils.jl
+    get_stocks
 
 
 end

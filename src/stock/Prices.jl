@@ -89,7 +89,8 @@ Query String Parameters
 |:-------|:--------
 |types   | Required
 |        | Comma delimited list of endpoints to call. The names should match
-|         | the individual endpoint names. Limited to 10 endpoints.
+|        | the individual endpoint names. Limited to 10 endpoints.
+|        | should be one of chart,quote,news
 |symbols | Optional
 |        | Comma delimited list of symbols limited to 100. This parameter is
 |        | used only if market option is used.
@@ -129,6 +130,27 @@ function batch(
         range = range,
         filter = filter
     )
+end
+
+
+"""
+
+    batched_closes(conn::Connection, symbol::String, symbols::Array{String,1};
+        range="1m")
+
+get closes for multiple symbols
+"""
+function batched_closes(conn::Connection, symbols::Array{String,1}; range="1m")
+
+    hist = batch(conn, "market", "chart"; symbols=join(symbols, ", "), 
+        range=range, filter="date,close")
+    df = []
+    for symbol in symbols
+        tmp_df = vcat([DataFrame(x) for x in hist[symbol]["chart"]]...)
+        tmp_df[!, :symbol] .= symbol
+        push!(df, tmp_df)
+    end
+    vcat(df...)
 end
 
 
