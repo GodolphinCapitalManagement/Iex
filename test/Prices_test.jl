@@ -1,6 +1,5 @@
 
 using Iex
-using Iex.Connect
 
 TEST_SLEEP_TIME = 15.0
 
@@ -11,7 +10,7 @@ params = (
     url="https://sandbox.iexapis.com/",
     version="stable",
 )
-iex = init_connection(;url=params.url, version=params.version,
+iex = Connection(;url=params.url, version=params.version,
     token=params.token);
 
 

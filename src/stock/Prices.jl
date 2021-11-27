@@ -1,14 +1,11 @@
 # Stocks/Prices
 
-
-import Iex.Connect: IEXException
-
 import Dates: Date
 import DataFrames: DataFrame, Not
 
 
-std_cols = "date,label,open,high,low,close,volume,uOpen,uHigh,uLow,uClose,uVolume"
-
+# std_cols = "date,label,open,high,low,close,volume,uOpen,uHigh,uLow,uClose,uVolume"
+const std_cols = "date,open,high,low,close,volume"
 
 """
     history(
@@ -59,11 +56,11 @@ function history(
             Float64,
             Float64,
             Int64,
-            Float64,
-            Float64,
-            Float64,
-            Float64,
-            Int64,
+            # Float64,
+            # Float64,
+            # Float64,
+            # Float64,
+            # Int64,
         ]
         return DataFrame(coltypes, colnames, 0)
     end

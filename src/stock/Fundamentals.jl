@@ -1,6 +1,5 @@
 
 # Stocks/Fundamentals
-import Iex.Connect: status
 
 
 """

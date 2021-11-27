@@ -1,46 +1,16 @@
 # Connect
-module Connect
 
 import HTTP: request
 import JSON: parse
-
-using Iex
-
-export status, IEXException
-
-"""
-    Connection
-
-Fields:
-    url::String
-    version::String
-    token::String
-"""
-
-
-"""
-    status(conn::Connection)
-
-Get status for IEX connection
-"""
-function status(conn::Connection)
-    url = conn.url * conn.version * "/status"
-    r = try
-        request("GET", url;)
-    catch e
-        throw(IEXException[e.status])
-    end
-    return parse(String(r.body))
-end
 
 
 """
     struct IEXException <: Exception
 
-IEX Cloud uses [HTTP response codes](https://www.restapitutorial.com/httpstatuscodes.html)
-to indicate the success or failure of an API request.
+    IEX Cloud uses [HTTP response codes](https://www.restapitutorial.com/httpstatuscodes.html)
+    to indicate the success or failure of an API request.
 
-Found at [API Version](https://iexcloud.io/docs/api/#error-codes)
+    Found at [API Version](https://iexcloud.io/docs/api/#error-codes)
 """
 struct IEXException <: Exception
     msg::AbstractString
@@ -89,4 +59,86 @@ const IEXErrorCodes = Dict{Int, Array{String,1}}(
     500 => ["Something went wrong on an IEX Cloud server."]
 )
 
+
+""" 
+    global Iex connection 
+
+    mutable struct Connection <: Any
+
+        Fields
+        ≡≡≡≡≡≡≡≡
+      
+        url     :: String
+        version :: String
+        token   :: String
+      
+"""
+mutable struct Connection <: Any
+    url::String
+    version::String
+    token::String
+
+    Connection(;url::String="", version::String="", token::String="") = begin 
+        @assert !isempty(url) "Iex URL is missing!"
+        @assert !isempty(version) "Iex version is missing!"
+        @assert !isempty(token) "Iex token is missing!"
+
+        new(url, version, token)
+    end
+end
+
+
+"""
+    show method override for Connection
+
+"""
+Base.show(io::IO, z::Connection) = print(io, 
+    "{\n  URL: $(z.url)\n  Version: $(z.version)\n  Token: $(z.token)\n}"
+)
+
+
+
+"""
+    set_connection_url!(conn::Connection, url::String)
+
+Modifies url for connection object conn
+"""
+function set_connection_url!(conn::Connection, url::String)
+    conn.url = url
+end
+
+
+"""
+    set_connection_version!(conn::Connection, version::String)
+
+Modifies version for connection object conn
+"""
+function set_connection_version!(conn::Connection, version::String)
+    conn.version = version
+end
+
+
+"""
+    set_connection_token!(conn::Connection, token::String)
+
+Modifies url for connection object conn
+"""
+function set_connection_token!(conn::Connection, token::String)
+    conn.token = token
+end
+
+
+"""
+    status(conn::Connection)
+
+Get status for IEX connection
+"""
+function status(conn::Connection)
+    url = conn.url * conn.version * "/status"
+    r = try
+        request("GET", url;)
+    catch e
+        throw(IEXException[e.status])
+    end
+    return parse(String(r.body))
 end

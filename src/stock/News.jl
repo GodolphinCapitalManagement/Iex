@@ -1,5 +1,4 @@
 # Stocks/News
-import Iex.Connect: status
 
 """
     news(conn::Connection, symbol::String; last::Int=10

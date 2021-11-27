@@ -1,6 +1,4 @@
 # Stocks/Fundamentals
-import Iex.Connect: status
-
 
 """
     stats(conn::Connection, symbol::String, stat::String)

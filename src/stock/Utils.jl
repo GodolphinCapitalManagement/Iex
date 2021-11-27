@@ -3,8 +3,6 @@
 import HTTP: request, escapeuri
 import JSON: parse
 
-import Iex.Connect: IEXException
-
 valid_range_values = [
     "max", "5y", "2y", "1y", "ytd", "6m", "3m", "1m", "1mm", "5d", "5dm",
     "date", "dynamic", "next"

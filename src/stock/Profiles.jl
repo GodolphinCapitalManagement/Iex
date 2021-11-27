@@ -1,6 +1,4 @@
 # Stocks/Profiles
-import Iex.Connect: status
-
 
 """
     profile(conn::Connection, symbol::String)
