@@ -42,5 +42,8 @@ export news
 include("reference/Reference.jl")
 export symbols
 
+# Options
+include("stock/options.jl")
+export bsopm_call, bsopm_impvol
 
 end
