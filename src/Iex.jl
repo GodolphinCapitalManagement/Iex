@@ -44,6 +44,6 @@ export symbols
 
 # Options
 include("stock/Options.jl")
-export bsopm_call, bsopm_impvol
+export bsopm_call, bsopm_impvol, calc_term, calc_hr
 
 end

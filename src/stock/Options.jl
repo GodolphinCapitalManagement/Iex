@@ -1,6 +1,7 @@
 # Option Pricing Formulas
 using Distributions
 using Roots
+using Dates
 
 
 """
@@ -34,3 +35,63 @@ function bsopm_impvol(opt_val, S, K, r, t)
     end 
     return r
 end  # function bsopm_impvol
+
+
+"""
+    calc_term(valuedate::Date, id::String, ipodate::Date,
+        enddate::Date; 
+        dadate::Union{Missing,Date}=missing,
+        mergerdate::Union{Missing,Date}=missing, 
+        closingdate::Union{Missing,Date}=missing,
+        da_to_merger_days::Int64=120,
+        merger_to_effective_days::Int64=30, 
+        ann_factor::Int64=252)
+
+calculates exercise date, maturity date and option 
+term in years.
+"""
+function calc_term(valuedate::Date, id::String, ipodate::Date;
+    enddate::Union{Missing,Date}=missing,
+    dadate::Union{Missing,Date}=missing,
+    mergerdate::Union{Missing,Date}=missing, 
+    closingdate::Union{Missing,Date}=missing,
+    da_to_merger_days::Int64=120,
+    merger_to_effective_days::Int64=30, 
+    ann_factor::Int64=252)
+
+    spac_term = (ismissing(enddate) ? closingdate : enddate) - ipodate
+    
+    if ismissing(dadate) && ismissing(mergerdate)
+        maturity_date = ipodate + Month(60)
+        first_exercise_date = ipodate + Day(spac_term)
+    elseif ismissing(mergerdate)
+        maturity_date = dadate + Day(da_to_merger_days) + Month(60)
+        first_exercise_date = dadate + Day(da_to_merger_days) + 
+            Day(merger_to_effective_days)
+    else
+        maturity_date = mergerdate + Month(60)
+        first_exercise_date =  max(ipodate + Month(12), 
+            mergerdate + Day(merger_to_effective_days))
+    end
+
+    t = max(1, (maturity_date - valuedate).value)/365.25
+    Nstep = max(30, convert(Int, round(t * ann_factor)))
+
+    e = max(0, (first_exercise_date - valuedate).value)/365.25
+    Estep = convert(Int, round(e * ann_factor))
+
+    return (id=id, date=valuedate, t=t, Nstep=Nstep, Estep=Estep)
+end
+
+
+"""
+    calc_hr(S, K, r, σ, t, a, b, c)
+
+calculates warrant HR based on HW market model
+"""
+function calc_hr(S, K, r, σ, t, a, b, c)
+    value, δ, vega =  bsopm_call(S, K, r, σ, t) 
+    δₘᵥ = clamp(δ + (vega / (S * sqrt(t))) * (a + b * δ + c * δ^2), 0, 1)
+
+    return (S=S, value=value, δ=δ, vega=vega, δₘᵥ=δₘᵥ)
+end  # function calc_hr
