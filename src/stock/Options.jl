@@ -30,6 +30,7 @@ function bsopm_impvol(opt_val, S, K, r, t)
         find_zero(f, (0.0, 5.0), Bisection())
     catch e 
         println(e)
+        return 0.0
     end 
     return r
 end  # function bsopm_impvol
