@@ -4,13 +4,17 @@ authors = ["Gyan Sinha <gsinha@godolphincapital.com> and contributors"]
 version = "0.1.0"
 
 [deps]
+BLPData = "eb622722-88ce-45f2-a8b9-c2f73a5cb263"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+RobustModels = "d6ea1423-9682-4bbd-952f-b1577cbf8c98"
 Roots = "f2b01f46-fcfa-551c-844a-d8ac1e96c665"
+ShiftedArrays = "1277b4bf-5013-50f5-be3d-901d8477a67a"
 
 [compat]
 Documenter = "0.25"
