@@ -4,6 +4,7 @@ using Distributions
 using Roots
 using Dates
 using RobustModels
+using MixedModels
 using GLM
 using ShiftedArrays
 
@@ -33,7 +34,7 @@ function bsopm_impvol(opt_val, S, K, r, t)
 
     f(x) = opt_val - bsopm_call(S, K, r, x, t).value
     r = try
-        find_zero(f, (0.0, 5.0), Bisection())
+        find_zero(f, (0.0, 50.0)) # , Bisection())
     catch e 
         println(e)
         return 0.0
@@ -110,8 +111,9 @@ generates price data and computes min-variance deltas for a stock/warrant pair.
 function fortify_mv_df!(dyn_df::DataFrame; K::Float64=11.5, r::Float64=0.0008)
 
     # create phase variables
-    transform!(dyn_df, [:date, :dadate, :closingdate] => ByRow((x,y,z) -> ismissing(y) & ismissing(z) || (x < y) ? 1 :
-        ifelse(x >= y && (x < z), 2, 3)) => :phase)
+
+    # transform(z_u, [:date, :dadate, :closingdate] => ByRow( (x, y, z) -> 
+    #     !(ismissing(y) || ismissing(z)) ? ifelse(x >= y && x < z, 2,  3) : 1) => :phase)
 
     dyn_df[!, :ls] = lag(dyn_df.s)
     dyn_df[!, :ds] = dyn_df.s .- dyn_df.ls 
@@ -123,7 +125,7 @@ function fortify_mv_df!(dyn_df::DataFrame; K::Float64=11.5, r::Float64=0.0008)
             dadate=row.dadate, mergerdate=row.mergerdate, closingdate=row.closingdate), 
             eachrow(dyn_df)))
 
-    dyn_df = leftjoin!(dyn_df, z, on=[:id, :date])
+    leftjoin!(dyn_df, z, on=[:id, :date])
     select!(dyn_df, Not([:id, :ipodate, :dadate, :closingdate, :enddate, :mergerdate, :Nstep, :Estep]))
 
     # fortify data with bsopm delta and vega
@@ -172,3 +174,49 @@ function compute_mv_delta(dyn_df::DataFrame;
     return (sub_df=sub_df, hw_reg=hw_reg, params=(a, b, c))
 
 end  # function compute_mv_delta
+
+
+"""
+    lme_mv_delta(dyn_df::DataFrame;
+        start_date::Union{Missing,Date}=missing,
+        end_date::Union{Missing,Date}=missing)
+
+computes min-variance deltas for a stock/warrant pair.
+"""
+function lme_mv_delta(dyn_df::DataFrame;
+        start_date::Union{Missing,Date}=missing,
+        end_date::Union{Missing,Date}=missing)
+
+    if !ismissing(end_date)
+        sub_df = subset(dyn_df, :date => x -> x <= end_date, skipmissing=true)
+    elseif !ismissing(start_date)
+        sub_df = subset(dyn_df, :date => x -> x >= start_date, skipmissing=true)
+    elseif !(ismissing(start_date) && ismissing(end_date))
+        sub_df = subset(dyn_df, :date => x -> x >= start_date && x <= end_date, 
+            skipmissing=true)
+    else
+        sub_df = dyn_df
+    end
+
+    Y = sub_df.dw .- sub_df.δ .* sub_df.ds
+    μ = (sub_df.vega ./ sqrt.(sub_df.t)) .* (sub_df.ds./sub_df.s)
+    x₁ = μ
+    x₂ = μ .* sub_df.δ
+    x₃ = μ .* sub_df.δ.^2
+
+    estim_df = DataFrame(Y=Y, x₁=x₁, x₂=x₂, x₃=x₃, symbol=sub_df.symbol)
+
+    fm = @formula(Y ~ 0 + x₁ + x₂ + x₃ + (0 + x₁ + x₂ + x₃|symbol))
+    fm1 = fit(MixedModel, fm, estim_df)
+
+    a, b, c = fixef(fm1)
+    fixef_df = DataFrame(symbol="AVG", x₁=a, x₂=b, x₃=c)
+    ranef_df = DataFrame(only(raneftables(fm1)))
+    param_df = reduce(vcat, [fixef_df, ranef_df])
+    param_df[!, :obsdate] .= maximum(dyn_df.date)
+
+    dyn_df[!, :δₘᵥ] = max.(0.0, dyn_df.δ .+ (dyn_df.vega ./ 
+        (dyn_df.s .* sqrt.(dyn_df.t))) .* (a .+ b .* dyn_df.δ + c .* dyn_df.δ.^2))
+
+    return (estim=estim_df, fm1=fm1, param_df=param_df)
+end

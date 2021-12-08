@@ -45,7 +45,7 @@ export symbols
 # Options
 include("stock/Options.jl")
 export bsopm_call, bsopm_impvol, calc_term, calc_hr, fortify_mv_df!
-export compute_mv_delta
+export compute_mv_delta, lme_mv_delta
 
 const fields_to_merge = [:id, :ipodate, :enddate, :dadate, :mergerdate, :closingdate]
 export fields_to_merge
