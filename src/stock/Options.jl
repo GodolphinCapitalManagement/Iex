@@ -11,30 +11,30 @@ using ShiftedArrays
 using BLPData
 
 """
-    bsopm_call(S, K, r, σ, t)
+    bsopm_call(S, K, r, σ, t; q=0.0, u=0.0)
     Black-Scholes Pricing Model for Call Options
 
     returns call value, delta and vega as a named tuple
 """
-function bsopm_call(S, K, r, σ, t)
+function bsopm_call(S, K, r, σ, t; q=0.0, u=0.0)
     n = Normal()
-    d₁ = (log(S/K) + (r + 0.5 * σ^2) * t) /(σ * √t)
+    d₁ = (log(S/K) + ((r-q-u) + 0.5 * σ^2) * t) /(σ * √t)
     d₂ = d₁ - σ * √t
-    value = S * cdf(n, d₁) - K * exp(-r*t) * cdf(n, d₂)
+    value = S * exp(-(q+u)*t) * cdf(n, d₁) - K * exp(-r*t) * cdf(n, d₂)
 
-    δ = cdf(n, d₁)
-    vega = S * √t * pdf(n, d₁)
+    δ = exp(-(q+u)*t) * cdf(n, d₁)
+    vega = S * exp(-(q+u)*t) * √t * pdf(n, d₁)
 
     return (value=value, δ=δ, vega=vega)
 end  # function bsomp_call
 
 
 
-function bsopm_impvol(opt_val, S, K, r, t)
+function bsopm_impvol(opt_val, S, K, r, t; q=0.0, u=0.0)
 
-    f(x) = opt_val - bsopm_call(S, K, r, x, t).value
+    f(x) = opt_val - bsopm_call(S, K, r, x, t, q=q, u=u).value
     r = try
-        find_zero(f, (0.0, 50.0)) # , Bisection())
+        find_zero(f, (0.0, 500.0)) # , Bisection())
     catch e 
         println(e)
         return 0.0
@@ -188,11 +188,11 @@ function lme_mv_delta(dyn_df::DataFrame;
         end_date::Union{Missing,Date}=missing)
 
     if !ismissing(end_date)
-        sub_df = subset(dyn_df, :date => x -> x <= end_date, skipmissing=true)
+        sub_df = subset(dyn_df, :date => x -> x .<= end_date, skipmissing=true)
     elseif !ismissing(start_date)
-        sub_df = subset(dyn_df, :date => x -> x >= start_date, skipmissing=true)
+        sub_df = subset(dyn_df, :date => x -> x .>= start_date, skipmissing=true)
     elseif !(ismissing(start_date) && ismissing(end_date))
-        sub_df = subset(dyn_df, :date => x -> x >= start_date && x <= end_date, 
+        sub_df = subset(dyn_df, :date => x -> x .>= start_date && x .<= end_date, 
             skipmissing=true)
     else
         sub_df = dyn_df
